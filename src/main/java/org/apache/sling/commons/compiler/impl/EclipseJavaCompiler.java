@@ -233,9 +233,12 @@ public class EclipseJavaCompiler implements JavaCompiler {
     }
 
     private String adjustJavaVersion(String javaVersion) {
-
-        // ECJ 4.6.1 expects Java version 1.9, not 9
-        return "9".equals(javaVersion) ? "1.9" : javaVersion;
+        // use latest supported version (Java 9) in case the given java version is not supported by ECJ yet
+        if (CompilerOptions.versionToJdkLevel(javaVersion) == 0) {
+            logger.warn("Using unsupported java version '{}', assuming latest supported version '{}'", javaVersion, CompilerOptions.VERSION_9);
+            return CompilerOptions.VERSION_9;
+        }
+        return javaVersion;
     }
 
     //--------------------------------------------------------< inner classes >
