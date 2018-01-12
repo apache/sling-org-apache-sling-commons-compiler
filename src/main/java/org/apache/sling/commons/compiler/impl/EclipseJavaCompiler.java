@@ -26,6 +26,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.sling.commons.classloader.ClassLoaderWriter;
 import org.apache.sling.commons.compiler.CompilationResult;
@@ -70,6 +72,8 @@ public class EclipseJavaCompiler implements JavaCompiler {
 
     /** the static policy. */
     private final IErrorHandlingPolicy policy = DefaultErrorHandlingPolicies.exitAfterAllProblems();
+    
+    private final Set<String> warningEmittedForUnsupportedJavaVersion = new CopyOnWriteArraySet<>();
 
     /**
      * Get the classloader for the compilation.
@@ -235,7 +239,10 @@ public class EclipseJavaCompiler implements JavaCompiler {
     private String adjustJavaVersion(String javaVersion) {
         // use latest supported version (Java 9) in case the given java version is not supported by ECJ yet
         if (CompilerOptions.versionToJdkLevel(javaVersion) == 0) {
-            logger.warn("Using unsupported java version '{}', assuming latest supported version '{}'", javaVersion, CompilerOptions.VERSION_9);
+            // only log once per invalid javaVersion
+            if (!warningEmittedForUnsupportedJavaVersion.contains(javaVersion) && warningEmittedForUnsupportedJavaVersion.add(javaVersion)) {
+                logger.warn("Using unsupported java version '{}', assuming latest supported version '{}'", javaVersion, CompilerOptions.VERSION_9);
+            }
             return CompilerOptions.VERSION_9;
         }
         return javaVersion;
