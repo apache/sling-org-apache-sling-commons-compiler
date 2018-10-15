@@ -61,7 +61,7 @@
                             !org.apache.tools.*,*
                         </Import-Package>
                         <Embed-Dependency>
-                            ecj
+                            ecj;inline=true
                         </Embed-Dependency>
                     </instructions>
                 </configuration>
