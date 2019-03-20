@@ -237,13 +237,14 @@ public class EclipseJavaCompiler implements JavaCompiler {
     }
 
     private String adjustJavaVersion(String javaVersion) {
-        // use latest supported version (Java 9) in case the given java version is not supported by ECJ yet
+        // use latest supported version (Java 11) in case the given java version is not supported by ECJ yet
         if (CompilerOptions.versionToJdkLevel(javaVersion) == 0) {
+            String latestSupportedVersion = CompilerOptions.VERSION_11;
             // only log once per invalid javaVersion
             if (!warningEmittedForUnsupportedJavaVersion.contains(javaVersion) && warningEmittedForUnsupportedJavaVersion.add(javaVersion)) {
-                logger.warn("Using unsupported java version '{}', assuming latest supported version '{}'", javaVersion, CompilerOptions.VERSION_9);
+                logger.warn("Using unsupported java version '{}', assuming latest supported version '{}'", javaVersion, latestSupportedVersion);
             }
-            return CompilerOptions.VERSION_9;
+            return latestSupportedVersion;
         }
         return javaVersion;
     }

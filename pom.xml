@@ -93,7 +93,7 @@
         <dependency>
             <groupId>org.eclipse.jdt</groupId>
             <artifactId>ecj</artifactId>
-            <version>3.13.100</version> <!-- this is the version shipped in Oxygen .2 -->
+            <version>3.16.0</version> <!-- this is the version shipped in 2018-12/4.10.0 -->
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
