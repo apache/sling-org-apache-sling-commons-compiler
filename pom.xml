@@ -22,18 +22,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.sling</groupId>
-        <artifactId>sling</artifactId>
-        <version>30</version>
+        <artifactId>sling-bundle-parent</artifactId>
+        <version>38</version>
         <relativePath />
     </parent>
 
     <artifactId>org.apache.sling.commons.compiler</artifactId>
     <version>2.3.7-SNAPSHOT</version>
-    <packaging>bundle</packaging>
 
-    <name>Apache Sling Commons Java Compiler</name>
+    <name>Apache Sling Commons Compiler</name>
     <description>
-        The Sling Commons Java Compiler bundle provides platform independent Java Compilation
+        The Apache Sling Commons Compiler bundle provides platform independent Java Compilation
         support using the Eclipse Java Compiler (org.eclipse.jdt).
     </description>
 
@@ -44,27 +43,11 @@
       <tag>HEAD</tag>
   </scm>
 
-    <properties>
-        <sling.java.version>7</sling.java.version>
-    </properties>
-
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Import-Package>
-                            !org.eclipse.*,
-                            !org.apache.tools.*,*
-                        </Import-Package>
-                        <Embed-Dependency>
-                            ecj;inline=true
-                        </Embed-Dependency>
-                    </instructions>
-                </configuration>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -81,7 +64,11 @@
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>osgi.core</artifactId>
+            <artifactId>org.osgi.annotation.versioning</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.component.annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
@@ -102,8 +89,6 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>16.0.2</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- testing -->
