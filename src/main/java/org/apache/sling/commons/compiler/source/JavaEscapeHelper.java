@@ -25,6 +25,10 @@ import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * The {@code JavaEscapeHelper} class provides various methods which can be used to generate valid Java identifiers or package / class
+ * names, especially when generating them from a transcompiler.
+ */
 public final class JavaEscapeHelper {
 
     private static final Set<String> javaKeywords = new HashSet<>();
@@ -125,7 +129,9 @@ public final class JavaEscapeHelper {
     }
 
     /**
-     * Escapes the provided character so that it's a valid Java identifier character.
+     * Escapes the provided character so that it's a valid Java identifier character. This method does not check if the provided
+     * character is valid and will escape any character into a sequence matching the {@code (__[0-9a-f]{4}__)} pattern, by using the
+     * character's decimal code and converting it to hexadecimal.
      *
      * @param ch the character to escape
      * @return the escaped character representation
@@ -135,26 +141,32 @@ public final class JavaEscapeHelper {
     }
 
     /**
-     * Provided an escaped string (obtained by calling {@link #escapeChar(char)}) it will will return the character that was
-     * escaped.
+     * Returns the original character that was escaped, given an {@code escapeSequence}. The {@code escapeSequence} has to match the
+     * {@code (__[0-9a-f]{4}__)} pattern.
      *
-     * @param escaped the escaped string
+     * @param escapeSequence the escaped string
      * @return the original character
+     * @throws IllegalArgumentException if the {@code escaped} string does not match the (__[0-9a-f]{4}__) pattern
      */
-    public static char unescape(@NotNull String escaped) {
-        String toProcess = escaped.replace("__", "");
-        return (char) Integer.parseInt(toProcess, 16);
+    public static char unescape(@NotNull String escapeSequence) {
+        Matcher matcher = ESCAPED_CHAR_PATTERN.matcher(escapeSequence);
+        if (matcher.matches() && matcher.groupCount() == 1) {
+            String toProcess = escapeSequence.replace("__", "");
+            return (char) Integer.parseInt(toProcess, 16);
+        }
+        throw new IllegalArgumentException(
+                String.format("String '%s' does not match pattern %s.", escapeSequence, ESCAPED_CHAR_PATTERN.pattern()));
     }
 
     /**
-     * Provided a string which could contain characters escaped through {@link #escapeChar(char)}, this method will unescape all escaped
-     * characters.
+     * Provided a string which could contain escape sequences generated through {@link #escapeChar(char)}, this method will unescape all
+     * such sequences.
      *
-     * @param escaped a string containing escaped characters
+     * @param input a string containing escaped characters
      * @return a string with all escaped sequences produced by {@link #escapeChar(char)} replaced by the original character
      */
-    public static @NotNull String unescapeAll(@NotNull String escaped) {
-        String unescaped = escaped;
+    public static @NotNull String unescapeAll(@NotNull String input) {
+        String unescaped = input;
         Matcher matcher = ESCAPED_CHAR_PATTERN.matcher(unescaped);
         while (matcher.find()) {
             String group = matcher.group();
@@ -168,7 +180,7 @@ public final class JavaEscapeHelper {
      * Converts the given {@code path} to a Java package or fully-qualified class name, depending on the {@code path}'s value.
      *
      * @param path the path to convert
-     * @return Java package corresponding to the given path
+     * @return Java package / fully-qualified class name corresponding to the given path
      */
     public static @NotNull String makeJavaPackage(@NotNull String path) {
         String[] classNameComponents = path.split("/|\\\\");
@@ -187,7 +199,8 @@ public final class JavaEscapeHelper {
     }
 
     /**
-     * Test whether the argument is a Java keyword.
+     * Test whether the argument is a Java keyword, according to the
+     * <a href="https://docs.oracle.com/javase/specs/jls/se13/html/jls-3.html#jls-3.9">Java Language Specification</a>.
      *
      * @param key the String to test
      * @return {@code true} if the String is a Java keyword, {@code false} otherwise
@@ -197,7 +210,8 @@ public final class JavaEscapeHelper {
     }
 
     /**
-     * Test whether the argument is a Java literal (i.e. {@code true}, {@code false}, {@code null}).
+     * Test whether the argument is a Java literal, according to the
+     * <a href="https://docs.oracle.com/javase/specs/jls/se13/html/jls-3.html#jls-3.9">Java Language Specification</a>..
      *
      * @param key the String to test
      * @return {@code true} if the String is a Java literal, {@code false} otherwise
@@ -207,7 +221,8 @@ public final class JavaEscapeHelper {
     }
 
     /**
-     * Test whether the argument is a special identifier (i.e. {@code var}).
+     * Test whether the argument is a special identifier, according to the
+     * a href="https://docs.oracle.com/javase/specs/jls/se13/html/jls-3.html#jls-3.9">Java Language Specification</a>..
      *
      * @param key the String to test
      * @return {@code true} if the String is a Java special identifier, {@code false} otherwise

@@ -46,9 +46,14 @@ public class JavaEscapeHelperTest {
     }
 
     @Test
-    public void testUnmangle() {
+    public void testUnescape() {
         assertEquals('.', JavaEscapeHelper.unescape(JavaEscapeHelper.escapeChar('.')));
         assertEquals('.', JavaEscapeHelper.unescape("__002e__"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUnescapeInvalid() {
+        JavaEscapeHelper.unescape("not a valid escape pattern");
     }
 
     @Test
