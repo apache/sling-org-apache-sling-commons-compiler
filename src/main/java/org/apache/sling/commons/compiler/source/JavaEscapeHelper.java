@@ -222,7 +222,7 @@ public final class JavaEscapeHelper {
 
     /**
      * Test whether the argument is a special identifier, according to the
-     * a href="https://docs.oracle.com/javase/specs/jls/se13/html/jls-3.html#jls-3.9">Java Language Specification</a>..
+     * <a href="https://docs.oracle.com/javase/specs/jls/se13/html/jls-3.html#jls-3.9">Java Language Specification</a>.
      *
      * @param key the String to test
      * @return {@code true} if the String is a Java special identifier, {@code false} otherwise
