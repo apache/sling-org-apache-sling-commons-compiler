@@ -303,7 +303,7 @@ public class EclipseJavaCompiler implements JavaCompiler {
                     }
                 }
             }
-            if ( this.errorHandler.getErrors() == null ) {
+            if (!result.hasErrors()) {
                 ClassFile[] classFiles = result.getClassFiles();
                 for (int i = 0; i < classFiles.length; i++) {
                     ClassFile classFile = classFiles[i];
