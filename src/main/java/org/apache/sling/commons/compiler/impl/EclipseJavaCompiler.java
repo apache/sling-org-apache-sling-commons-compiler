@@ -1,18 +1,20 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.sling.commons.compiler.impl;
 
@@ -72,7 +74,7 @@ public class EclipseJavaCompiler implements JavaCompiler {
 
     /** the static policy. */
     private final IErrorHandlingPolicy policy = DefaultErrorHandlingPolicies.exitAfterAllProblems();
-    
+
     private final Set<String> warningEmittedForUnsupportedJavaVersion = new CopyOnWriteArraySet<>();
 
     /**
@@ -80,14 +82,13 @@ public class EclipseJavaCompiler implements JavaCompiler {
      */
     private ClassLoader getClassLoader(final Options options, final ClassLoaderWriter classLoaderWriter) {
         final ClassLoader loader;
-        if ( options.get(Options.KEY_CLASS_LOADER) != null ) {
-            loader = (ClassLoader)options.get(Options.KEY_CLASS_LOADER);
-        } else if ( options.get(Options.KEY_ADDITIONAL_CLASS_LOADER) != null ) {
-            final ClassLoader additionalClassLoader = (ClassLoader)options.get(Options.KEY_ADDITIONAL_CLASS_LOADER);
+        if (options.get(Options.KEY_CLASS_LOADER) != null) {
+            loader = (ClassLoader) options.get(Options.KEY_CLASS_LOADER);
+        } else if (options.get(Options.KEY_ADDITIONAL_CLASS_LOADER) != null) {
+            final ClassLoader additionalClassLoader = (ClassLoader) options.get(Options.KEY_ADDITIONAL_CLASS_LOADER);
             loader = new ClassLoader(classLoaderWriter.getClassLoader()) {
                 @Override
-                protected Class<?> findClass(String name)
-                throws ClassNotFoundException {
+                protected Class<?> findClass(String name) throws ClassNotFoundException {
                     return additionalClassLoader.loadClass(name);
                 }
 
@@ -98,7 +99,7 @@ public class EclipseJavaCompiler implements JavaCompiler {
             };
         } else {
             final ClassLoader cl = classLoaderWriter.getClassLoader();
-            if ( cl == null ) {
+            if (cl == null) {
                 loader = this.classLoaderWriter.getClassLoader();
             } else {
                 loader = cl;
@@ -111,8 +112,8 @@ public class EclipseJavaCompiler implements JavaCompiler {
      * Get the class loader writer for the compilation.
      */
     private ClassLoaderWriter getClassLoaderWriter(final Options options) {
-        if (options.get(Options.KEY_CLASS_LOADER_WRITER) != null ) {
-            return (ClassLoaderWriter)options.get(Options.KEY_CLASS_LOADER_WRITER);
+        if (options.get(Options.KEY_CLASS_LOADER_WRITER) != null) {
+            return (ClassLoaderWriter) options.get(Options.KEY_CLASS_LOADER_WRITER);
         }
         return this.classLoaderWriter;
     }
@@ -120,9 +121,9 @@ public class EclipseJavaCompiler implements JavaCompiler {
     /**
      * Check if the compiled class file is older than the source file
      */
-    private boolean isOutDated(final CompilationUnit unit,
-                               final ClassLoaderWriter writer) {
-        final long targetLastModified = writer.getLastModified('/' + unit.getMainClassName().replace('.', '/') + ".class");
+    private boolean isOutDated(final CompilationUnit unit, final ClassLoaderWriter writer) {
+        final long targetLastModified =
+                writer.getLastModified('/' + unit.getMainClassName().replace('.', '/') + ".class");
         if (targetLastModified < 0) {
             return true;
         }
@@ -134,8 +135,8 @@ public class EclipseJavaCompiler implements JavaCompiler {
      * Return the force compilation value
      */
     private boolean isForceCompilation(final Options options) {
-        final Boolean flag = (Boolean)options.get(Options.KEY_FORCE_COMPILATION);
-        if ( flag != null ) {
+        final Boolean flag = (Boolean) options.get(Options.KEY_FORCE_COMPILATION);
+        if (flag != null) {
             return flag;
         }
         return false;
@@ -145,8 +146,8 @@ public class EclipseJavaCompiler implements JavaCompiler {
      * Return the ignore warnings value
      */
     private boolean isIgnoreWarnings(final Options options) {
-        final Boolean flag = (Boolean)options.get(Options.KEY_IGNORE_WARNINGS);
-        if ( flag != null ) {
+        final Boolean flag = (Boolean) options.get(Options.KEY_IGNORE_WARNINGS);
+        if (flag != null) {
             return flag;
         }
         return false;
@@ -158,38 +159,37 @@ public class EclipseJavaCompiler implements JavaCompiler {
      * @see org.apache.sling.commons.compiler.JavaCompiler#compile(org.apache.sling.commons.compiler.CompilationUnit[], org.apache.sling.commons.compiler.Options)
      */
     @Override
-    public CompilationResult compile(final CompilationUnit[] units,
-                                     final Options compileOptions) {
+    public CompilationResult compile(final CompilationUnit[] units, final Options compileOptions) {
         // make sure we have an options object (to avoid null checks all over the place)
         final Options options = (compileOptions != null ? compileOptions : EMPTY_OPTIONS);
 
         // get classloader and classloader writer
         final ClassLoaderWriter writer = this.getClassLoaderWriter(options);
-        if ( writer == null ) {
+        if (writer == null) {
             return new CompilationResultImpl("Class loader writer for compilation is not available.");
         }
         final ClassLoader loader = this.getClassLoader(options, writer);
-        if ( loader == null ) {
+        if (loader == null) {
             return new CompilationResultImpl("Class loader for compilation is not available.");
         }
 
         // check sources for compilation
         boolean needsCompilation = isForceCompilation(options);
-        if ( !needsCompilation ) {
-            for(final CompilationUnit unit : units) {
-                if ( this.isOutDated(unit, writer) ) {
+        if (!needsCompilation) {
+            for (final CompilationUnit unit : units) {
+                if (this.isOutDated(unit, writer)) {
                     needsCompilation = true;
                     break;
                 }
             }
         }
-        if ( !needsCompilation ) {
+        if (!needsCompilation) {
             logger.debug("All source files are recent - no compilation required.");
             return new CompilationResultImpl(writer);
         }
 
         // delete old class files
-        for(final CompilationUnit unit : units) {
+        for (final CompilationUnit unit : units) {
             final String name = '/' + unit.getMainClassName().replace('.', '/') + ".class";
             writer.delete(name);
         }
@@ -220,15 +220,8 @@ public class EclipseJavaCompiler implements JavaCompiler {
         final CompileContext context = new CompileContext(units, result, writer, loader);
 
         // create the compiler
-        final org.eclipse.jdt.internal.compiler.Compiler compiler =
-                new org.eclipse.jdt.internal.compiler.Compiler(
-                        context,
-                        this.policy,
-                        settings,
-                        context,
-                        this.problemFactory,
-                        null,
-                        null);
+        final org.eclipse.jdt.internal.compiler.Compiler compiler = new org.eclipse.jdt.internal.compiler.Compiler(
+                context, this.policy, settings, context, this.problemFactory, null, null);
 
         // compile
         compiler.compile(context.getSourceUnits());
@@ -241,43 +234,48 @@ public class EclipseJavaCompiler implements JavaCompiler {
         if (CompilerOptions.versionToJdkLevel(javaVersion) == 0) {
             String latestSupportedVersion = CompilerOptions.VERSION_11;
             // only log once per invalid javaVersion
-            if (!warningEmittedForUnsupportedJavaVersion.contains(javaVersion) && warningEmittedForUnsupportedJavaVersion.add(javaVersion)) {
-                logger.warn("Using unsupported java version '{}', assuming latest supported version '{}'", javaVersion, latestSupportedVersion);
+            if (!warningEmittedForUnsupportedJavaVersion.contains(javaVersion)
+                    && warningEmittedForUnsupportedJavaVersion.add(javaVersion)) {
+                logger.warn(
+                        "Using unsupported java version '{}', assuming latest supported version '{}'",
+                        javaVersion,
+                        latestSupportedVersion);
             }
             return latestSupportedVersion;
         }
         return javaVersion;
     }
 
-    //--------------------------------------------------------< inner classes >
+    // --------------------------------------------------------< inner classes >
 
     private class CompileContext implements ICompilerRequestor, INameEnvironment {
 
-        private final Map<String,ICompilationUnit> compUnits;
+        private final Map<String, ICompilationUnit> compUnits;
 
         private final CompilationResultImpl errorHandler;
         private final ClassLoaderWriter classLoaderWriter;
         private final ClassLoader classLoader;
 
-        public CompileContext(final CompilationUnit[] units,
-         		              final CompilationResultImpl errorHandler,
-        		              final ClassLoaderWriter classWriter,
-        		              final ClassLoader classLoader) {
-        	this.compUnits = new HashMap<>();
+        public CompileContext(
+                final CompilationUnit[] units,
+                final CompilationResultImpl errorHandler,
+                final ClassLoaderWriter classWriter,
+                final ClassLoader classLoader) {
+            this.compUnits = new HashMap<>();
             for (int i = 0; i < units.length; i++) {
                 CompilationUnitAdapter cua = new CompilationUnitAdapter(units[i], errorHandler);
                 char[][] compoundName = CharOperation.arrayConcat(cua.getPackageName(), cua.getMainTypeName());
-                this.compUnits.put(CharOperation.toString(compoundName), new CompilationUnitAdapter(units[i], errorHandler));
+                this.compUnits.put(
+                        CharOperation.toString(compoundName), new CompilationUnitAdapter(units[i], errorHandler));
             }
 
-        	this.errorHandler = errorHandler;
+            this.errorHandler = errorHandler;
             this.classLoaderWriter = classWriter;
             this.classLoader = classLoader;
         }
 
         public ICompilationUnit[] getSourceUnits() {
-        	return compUnits.values().toArray(
-        			new ICompilationUnit[compUnits.size()]);
+            return compUnits.values().toArray(new ICompilationUnit[compUnits.size()]);
         }
 
         /**
@@ -335,8 +333,7 @@ public class EclipseJavaCompiler implements JavaCompiler {
                 if (bytes == null) {
                     return null;
                 }
-                ClassFileReader classFileReader =
-                        new ClassFileReader(bytes, fqn.toCharArray(), true);
+                ClassFileReader classFileReader = new ClassFileReader(bytes, fqn.toCharArray(), true);
                 return new NameEnvironmentAnswer(classFileReader, null);
             } catch (Exception e) {
                 return null;
@@ -356,8 +353,7 @@ public class EclipseJavaCompiler implements JavaCompiler {
          */
         @Override
         public boolean isPackage(char[][] parentPackageName, char[] packageName) {
-            String fqn = CharOperation.toString(
-                    CharOperation.arrayConcat(parentPackageName, packageName));
+            String fqn = CharOperation.toString(CharOperation.arrayConcat(parentPackageName, packageName));
             return compUnits.get(fqn) == null && this.isPackage(fqn);
         }
 
@@ -380,14 +376,15 @@ public class EclipseJavaCompiler implements JavaCompiler {
 
         private boolean isPackage(String result) {
             String resourceName = result.replace('.', '/') + ".class";
-            if ( resourceName.startsWith("/") ) {
+            if (resourceName.startsWith("/")) {
                 resourceName = resourceName.substring(1);
             }
             final InputStream is = this.classLoader.getResourceAsStream(resourceName);
-            if ( is != null ) {
+            if (is != null) {
                 try {
                     is.close();
-                } catch (IOException ignore) {}
+                } catch (IOException ignore) {
+                }
             }
             return is == null;
         }
@@ -408,7 +405,8 @@ public class EclipseJavaCompiler implements JavaCompiler {
                 } finally {
                     try {
                         is.close();
-                    } catch (IOException ignore) {}
+                    } catch (IOException ignore) {
+                    }
                 }
             }
             return null;
@@ -426,7 +424,7 @@ public class EclipseJavaCompiler implements JavaCompiler {
             this.compUnit = compUnit;
             this.errorHandler = errorHandler;
             final int pos = compUnit.getMainClassName().lastIndexOf('.');
-            if ( pos == -1 ) {
+            if (pos == -1) {
                 this.packageName = "";
                 this.mainTypeName = compUnit.getMainClassName();
             } else {
@@ -458,12 +456,18 @@ public class EclipseJavaCompiler implements JavaCompiler {
                     reader.close();
                 }
             } catch (IOException e) {
-                this.errorHandler.onError("Unable to read source file " + this.compUnit.getMainClassName() + " : " + e.getMessage(),
-                        this.compUnit.getMainClassName(), 0, 0);
+                this.errorHandler.onError(
+                        "Unable to read source file " + this.compUnit.getMainClassName() + " : " + e.getMessage(),
+                        this.compUnit.getMainClassName(),
+                        0,
+                        0);
                 return null;
             } finally {
-                if ( fr != null ) {
-                    try { fr.close(); } catch (IOException ignore) {}
+                if (fr != null) {
+                    try {
+                        fr.close();
+                    } catch (IOException ignore) {
+                    }
                 }
             }
         }
@@ -490,7 +494,7 @@ public class EclipseJavaCompiler implements JavaCompiler {
         @Override
         public char[] getFileName() {
             if (compUnit instanceof CompilationUnitWithSource) {
-                return ((CompilationUnitWithSource)compUnit).getFileName().toCharArray();
+                return ((CompilationUnitWithSource) compUnit).getFileName().toCharArray();
             } else {
                 return (this.packageName.replace('.', '/') + '/' + this.mainTypeName + ".java").toCharArray();
             }
