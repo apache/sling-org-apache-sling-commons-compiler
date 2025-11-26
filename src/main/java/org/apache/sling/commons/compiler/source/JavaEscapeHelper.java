@@ -1,21 +1,21 @@
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ~ Licensed to the Apache Software Foundation (ASF) under one
- ~ or more contributor license agreements.  See the NOTICE file
- ~ distributed with this work for additional information
- ~ regarding copyright ownership.  The ASF licenses this file
- ~ to you under the Apache License, Version 2.0 (the
- ~ "License"); you may not use this file except in compliance
- ~ with the License.  You may obtain a copy of the License at
- ~
- ~   http://www.apache.org/licenses/LICENSE-2.0
- ~
- ~ Unless required by applicable law or agreed to in writing,
- ~ software distributed under the License is distributed on an
- ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- ~ KIND, either express or implied.  See the License for the
- ~ specific language governing permissions and limitations
- ~ under the License.
- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.sling.commons.compiler.source;
 
 import java.util.HashSet;
@@ -36,8 +36,7 @@ public final class JavaEscapeHelper {
     private static final Set<String> specialIdentifiers = new HashSet<>();
     private static final Pattern ESCAPED_CHAR_PATTERN = Pattern.compile("(__[0-9a-f]{4}__)");
 
-    private JavaEscapeHelper() {
-    }
+    private JavaEscapeHelper() {}
 
     static {
         javaKeywords.add("abstract");
@@ -122,7 +121,9 @@ public final class JavaEscapeHelper {
             }
         }
         String currentIdentifier = modifiedIdentifier.toString();
-        if (isJavaKeyword(currentIdentifier) || isJavaLiteral(currentIdentifier) || isSpecialIdentifier(currentIdentifier)) {
+        if (isJavaKeyword(currentIdentifier)
+                || isJavaLiteral(currentIdentifier)
+                || isSpecialIdentifier(currentIdentifier)) {
             return escapeChar(currentIdentifier.charAt(0)) + currentIdentifier.substring(1);
         }
         return currentIdentifier;
@@ -154,8 +155,8 @@ public final class JavaEscapeHelper {
             String toProcess = escapeSequence.replace("__", "");
             return (char) Integer.parseInt(toProcess, 16);
         }
-        throw new IllegalArgumentException(
-                String.format("String '%s' does not match pattern %s.", escapeSequence, ESCAPED_CHAR_PATTERN.pattern()));
+        throw new IllegalArgumentException(String.format(
+                "String '%s' does not match pattern %s.", escapeSequence, ESCAPED_CHAR_PATTERN.pattern()));
     }
 
     /**
@@ -230,6 +231,4 @@ public final class JavaEscapeHelper {
     public static boolean isSpecialIdentifier(@NotNull String key) {
         return specialIdentifiers.contains(key);
     }
-
-
 }

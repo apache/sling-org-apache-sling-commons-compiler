@@ -21,4 +21,3 @@
 package org.apache.sling.commons.compiler;
 
 import org.osgi.annotation.versioning.Version;
-

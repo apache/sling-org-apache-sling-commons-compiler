@@ -1,18 +1,20 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.sling.commons.compiler.impl;
 
@@ -25,24 +27,20 @@ import java.security.SecureClassLoader;
 
 import org.apache.sling.commons.classloader.ClassLoaderWriter;
 
-
 /**
  * The <code>IsolatedClassLoader</code> class loads classes through
  * the class loader writer
  */
-public final class IsolatedClassLoader
-    extends SecureClassLoader {
+public final class IsolatedClassLoader extends SecureClassLoader {
 
     private final ClassLoaderWriter classLoaderWriter;
 
-    public IsolatedClassLoader(final ClassLoader parent,
-            final ClassLoaderWriter classLoaderWriter) {
+    public IsolatedClassLoader(final ClassLoader parent, final ClassLoaderWriter classLoaderWriter) {
         super(parent);
         this.classLoaderWriter = classLoaderWriter;
     }
 
-
-    //---------- Class loader overwrites -------------------------------------
+    // ---------- Class loader overwrites -------------------------------------
 
     /**
      * Loads the class from this <code>ClassLoader</class>.  If the
@@ -94,13 +92,12 @@ public final class IsolatedClassLoader
      */
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
         try {
-            return AccessController.doPrivileged(
-                new PrivilegedExceptionAction<Class<?>>() {
+            return AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
 
-                    public Class<?> run() throws ClassNotFoundException {
-                        return findClassPrivileged(name);
-                    }
-                });
+                public Class<?> run() throws ClassNotFoundException {
+                    return findClassPrivileged(name);
+                }
+            });
         } catch (final java.security.PrivilegedActionException pae) {
             throw (ClassNotFoundException) pae.getException();
         }
@@ -130,12 +127,12 @@ public final class IsolatedClassLoader
                 throw new ClassNotFoundException(name);
             }
             return c;
-        } catch ( final ClassNotFoundException cnfe) {
+        } catch (final ClassNotFoundException cnfe) {
             throw cnfe;
         } catch (final Throwable t) {
             throw new ClassNotFoundException(name, t);
         }
-     }
+    }
 
     /**
      * Defines a class getting the bytes for the class from the resource
@@ -148,12 +145,11 @@ public final class IsolatedClassLoader
      * @throws ClassFormatError If the class bytes read from the resource are
      *      not a valid class.
      */
-    private Class<?> defineClass(final String name, final InputStream is)
-    throws IOException {
+    private Class<?> defineClass(final String name, final InputStream is) throws IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final byte[] buffer = new byte[2048];
         int l;
-        while ( ( l = is.read(buffer)) >= 0 ) {
+        while ((l = is.read(buffer)) >= 0) {
             baos.write(buffer, 0, l);
         }
         final byte[] data = baos.toByteArray();
